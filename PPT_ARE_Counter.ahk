@@ -1,4 +1,4 @@
-#InstallKeybdHook
+﻿#InstallKeybdHook
 SetFormat, FloatFast, 1.0
 LastTimer := 0
 tempZ := 0
@@ -7,15 +7,32 @@ tempC := 0
 rate := 0
 DllCall("QueryPerformanceFrequency", "Int64*", rate)
 ToFrames := 1.0/rate * 60
-ARE_FRAMES := 6
 
 DllCall("QueryPerformanceCounter", "Int64*", LastTimer)
 
 ;               xpos ypos width        varName  text value
-Gui, Add, Edit, x0   y0   w50   +ReadOnly vZTxt, 0
-Gui, Add, Edit, x55  y0   w50   +ReadOnly vXTxt, 0
-Gui, Add, Edit, x110 y0   w50   +ReadOnly vCTxt, 0
-Gui, Show, , Main Window ; Create and display the GUI
+
+Gui, Font, cFFFFFF
+Gui, Add, Text, x5   y0   w15 h20 vLeftRotate, ↺
+Gui, Add, Edit, x20  y5   w50 h20 vZTxt, 0
+Gui, Add, Text, x75  y0   w15 h20 vRightRotate, ↻
+Gui, Add, Edit, x90  y5   w50 h20 vXTxt, 0
+Gui, Add, Text, x145 y0   w15 h20 vHold, ⥮
+Gui, Add, Edit, x160 y5   w50 h20 vCTxt, 0
+Gui, Color, Black
+Gui, Show, , PPT ARE
+
+Gui, Font, s16
+
+Gui, Color,, Black
+GuiControl, Font, LeftRotate
+GuiControl, Font, RightRotate
+GuiControl, Font, Hold
+GuiControl, Font, vZTxt
+GuiControl, Font, vXTxt
+GuiControl, Font, vCTxt
+
+
 return
 
 GuiClose:
@@ -24,16 +41,17 @@ GuiClose:
  
 SetTxtField(ByRef varName, ByRef value, ByRef check)
 {   
+    ARE_FRAMES := 6 ; for some reason can't put this at the top.
     if (check)
     {        
         GuiControl,, varName, %value%
-        if (%value% <= 6) 
+        if (value <= ARE_FRAMES) 
         {
-            MsgBox, %value%
-        }
-    } else {
-        ; they pressed space, set fields to blank.
+            Gui, Color,, Red            
+        } 
+    } else { ;they pressed space, set fields to blank.        
         GuiControl,, varName, 
+        Gui, Color,, Black
     }
     
 }
