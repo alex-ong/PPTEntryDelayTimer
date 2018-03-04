@@ -7,6 +7,7 @@ tempC := 0
 rate := 0
 DllCall("QueryPerformanceFrequency", "Int64*", rate)
 ToFrames := 1.0/rate * 60
+ARE_FRAMES := 6
 
 DllCall("QueryPerformanceCounter", "Int64*", LastTimer)
 
@@ -21,35 +22,46 @@ GuiClose:
  ExitApp
  return
  
-SetTxtField(ByRef varName, ByRef value)
+SetTxtField(ByRef varName, ByRef value, ByRef check)
 {   
-    GuiControl,, varName, %value%
+    if (check)
+    {        
+        GuiControl,, varName, %value%
+        if (%value% <= 6) 
+        {
+            MsgBox, %value%
+        }
+    } else {
+        ; they pressed space, set fields to blank.
+        GuiControl,, varName, 
+    }
+    
 }
 
 ~Space::
 DllCall("QueryPerformanceCounter", "Int64*", LastTimer)
-SetTxtField(ZTxt, 0)
-SetTxtField(XTxt, 0)
-SetTxtField(CTxt, 0)
+SetTxtField(ZTxt, 0, false)
+SetTxtField(XTxt, 0, false)
+SetTxtField(CTxt, 0, false)
 return 
 
 ~z::
 DllCall("QueryPerformanceCounter", "Int64*", tempZ)
 counts:= tempZ - LastTimer
 frames:= (counts * ToFrames)
-SetTxtField(ZTxt, frames)
+SetTxtField(ZTxt, frames, true)
 return
 
 ~x::
 DllCall("QueryPerformanceCounter", "Int64*", tempX)
 counts:= tempX - LastTimer
 frames:= (counts * ToFrames)
-SetTxtField(XTxt, frames)
+SetTxtField(XTxt, frames, true)
 return
 
 ~c::
 DllCall("QueryPerformanceCounter", "Int64*", tempC)
 counts:= tempC - LastTimer
 frames:= (counts * ToFrames)
-SetTxtField(CTxt, frames)
+SetTxtField(CTxt, frames, true)
 return
