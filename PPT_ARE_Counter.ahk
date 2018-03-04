@@ -4,6 +4,7 @@ LastTimer := 0
 tempZ := 0
 tempX := 0
 tempC := 0
+tempSpace := 0
 rate := 0
 DllCall("QueryPerformanceFrequency", "Int64*", rate)
 ToFrames := 1.0/rate * 60
@@ -14,11 +15,13 @@ DllCall("QueryPerformanceCounter", "Int64*", LastTimer)
 
 Gui, Font, cFFFFFF
 Gui, Add, Text, x5   y0   w15 h20 vLeftRotate, ↺
-Gui, Add, Edit, x20  y5   w50 h20 vZTxt, 0
-Gui, Add, Text, x75  y0   w15 h20 vRightRotate, ↻
-Gui, Add, Edit, x90  y5   w50 h20 vXTxt, 0
-Gui, Add, Text, x145 y0   w15 h20 vHold, ⥮
-Gui, Add, Edit, x160 y5   w50 h20 vCTxt, 0
+Gui, Add, Edit, x20  y5   w30 h20 vZTxt, 0
+Gui, Add, Text, x55  y0   w15 h20 vRightRotate, ↻
+Gui, Add, Edit, x70  y5   w30 h20 vXTxt, 0
+Gui, Add, Text, x105 y0   w15 h20 vHold, ⥮
+Gui, Add, Edit, x120 y5   w30 h20 vCTxt, 0
+Gui, Add, Text, x155 y0   w15 h20 vDrop, ⇊
+Gui, Add, Edit, x170 y5   w30 h20 vSpaceTxt, 0
 Gui, Color, Black
 Gui, Show, , PPT ARE
 
@@ -28,9 +31,11 @@ Gui, Color,, Black
 GuiControl, Font, LeftRotate
 GuiControl, Font, RightRotate
 GuiControl, Font, Hold
+GuiControl, Font, Drop
 GuiControl, Font, vZTxt
 GuiControl, Font, vXTxt
 GuiControl, Font, vCTxt
+GuiControl, Font, vSpaceTxt
 
 
 return
@@ -41,7 +46,7 @@ GuiClose:
  
 SetTxtField(ByRef varName, ByRef value, ByRef check)
 {   
-    ARE_FRAMES := 6 ; for some reason can't put this at the top.
+    ARE_FRAMES := 7 ; for some reason can't put this at the top.
     if (check)
     {        
         GuiControl,, varName, %value%
@@ -57,10 +62,17 @@ SetTxtField(ByRef varName, ByRef value, ByRef check)
 }
 
 ~Space::
-DllCall("QueryPerformanceCounter", "Int64*", LastTimer)
-SetTxtField(ZTxt, 0, false)
-SetTxtField(XTxt, 0, false)
-SetTxtField(CTxt, 0, false)
+DllCall("QueryPerformanceCounter", "Int64*", tempSpace)
+counts:= tempSpace - LastTimer
+frames:= (counts * ToFrames)
+ARE_FRAMES:= 7
+SetTxtField(SpaceTxt, frames, true)
+if (frames > ARE_FRAMES) { 
+    SetTxtField(ZTxt, 0, false)
+    SetTxtField(XTxt, 0, false)
+    SetTxtField(CTxt, 0, false)
+    LastTimer := tempSpace
+}
 return 
 
 ~z::
